@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dannys.Common.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,15 +17,20 @@ namespace Dannys.Common
     }
     public class CommonService<TEntity> where TEntity : class, IRootEntity
     {
-        readonly IRootRepository<TEntity> entityRepository;
+        protected readonly IRootRepository<TEntity> entityRepository;
         public CommonService(IRootRepository<TEntity> entityRepository)
         {
             this.entityRepository = entityRepository;
         }
 
-        public virtual Task Validate(ServiceResult result, TEntity entity)
+        public virtual Task Validate(ServiceResult result, TEntity entity, TEntity oldEntity = null)
         {
             return Task.CompletedTask;
+        }
+
+        protected virtual void CopyUpdateValue(TEntity dest, TEntity source)
+        {
+            new EntityUpdater().CopyValue(dest, source);
         }
 
         protected virtual Task Created(IUnitOfWork unitOfWork, TEntity entity)
@@ -68,8 +74,11 @@ namespace Dannys.Common
             entity.Created = new ActionSummary(unitOfWork.GetIdentity());
             entity.LastModified = new ActionSummary(unitOfWork.GetIdentity());
 
-            if (entityRepository.Insert(unitOfWork, entity, saveOption) > 0)
+            if ((await entityRepository.Insert(unitOfWork, entity, saveOption)) > 0)
+            {
                 await Created(unitOfWork, entity);
+                result.SetReturn(entity);
+            }
 
             return result;
         }
@@ -77,15 +86,21 @@ namespace Dannys.Common
         public async Task<ServiceResult> Update(IUnitOfWork unitOfWork, TEntity entity, SaveOption saveOption)
         {
             ServiceResult result = new ServiceResult(CommonService.UpdateAction);
-            await Validate(result, entity);
+            TEntity existing = await entityRepository.Get(unitOfWork, entity.Id);
+            await Validate(result, entity, existing);
             if (!result.Success) return result;
 
-            await Updating(unitOfWork, entity);
+            CopyUpdateValue(existing, entity);
 
-            entity.LastModified = new ActionSummary(unitOfWork.GetIdentity());
+            await Updating(unitOfWork, existing);
 
-            if (entityRepository.Update(unitOfWork, entity, saveOption) > 0)
-                await Updated(unitOfWork, entity);
+            existing.LastModified = new ActionSummary(unitOfWork.GetIdentity());
+
+            if ((await entityRepository.Update(unitOfWork, existing, saveOption)) > 0)
+            {
+                await Updated(unitOfWork, existing);
+                result.SetReturn(existing);
+            }
 
             return result;
         }
@@ -93,14 +108,16 @@ namespace Dannys.Common
         public async Task<ServiceResult> Delete(IUnitOfWork unitOfWork, int id, SaveOption saveOption)
         {
             ServiceResult result = new ServiceResult(CommonService.DeleteAction);
-            TEntity entity = entityRepository.Get(unitOfWork, id);
-            await Validate(result, entity);
+            TEntity entity = await entityRepository.Get(unitOfWork, id);
+            await Validate(result, entity, entity);
             if (!result.Success) return result;
 
             await Deleting(unitOfWork, entity);
 
-            if (entityRepository.Delete(unitOfWork, id, saveOption) > 0)
+            if ((await entityRepository.Delete(unitOfWork, id, saveOption)) > 0)
+            {
                 await Deleted(unitOfWork, entity);
+            }
 
             return result;
         }

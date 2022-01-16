@@ -12,14 +12,14 @@ namespace Dannys.Common
         where TEntity : class, IRootEntity
         where TDbContext : class, IDbContext
     {
-        public virtual TEntity Get(IUnitOfWork unitOfWork, int id, params Expression<Func<TEntity, object>>[] includeProperties)
+        public async virtual Task<TEntity> Get(IUnitOfWork unitOfWork, int id, params Expression<Func<TEntity, object>>[] includeProperties)
         {
             var dbContext = GetDbContext(unitOfWork);
             var dbSet = dbContext.Set<TEntity>();
             var qry = dbSet.Where(r => r.Id == id);
             foreach (var prop in includeProperties)
                 qry = qry.Include(prop);
-            var entity = qry.FirstOrDefault();
+            var entity = await qry.FirstOrDefaultAsync();
             if (entity == null)
                 throw new EntityNotFoundException<TEntity>(id);
             return entity;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,14 +23,20 @@ namespace Dannys.Common
             return unitOfWork.GetDbContext<TDbContext>();
         }
 
-        protected int Save(IDbContext dbContext, SaveOption saveOption)
+        protected async Task AddAuditTrail<TEntity>(IUnitOfWork unitOfWork, TEntity entity, [CallerMemberName] string action = "")
+            where TEntity : class, IEntity
+        {
+            await unitOfWork.AddAuditTrail(entity, action, SaveOption.ManualSave);
+        }
+
+        protected async Task<int> Save(IUnitOfWork unitOfWork, SaveOption saveOption)
         {
             if (saveOption == SaveOption.ManualSave)
                 return 0;
 
             try
             {
-                return dbContext.SaveChanges();
+                return await unitOfWork.SaveChanges();
             }
             catch (DbUpdateConcurrencyException e)
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dannys.Common
 {
-    public abstract class EFUnitOfWork<TDbContext> : IUnitOfWorkEF where TDbContext : class, IDbContext
+    public class EFUnitOfWork<TDbContext> : IUnitOfWorkEF where TDbContext : class, IDbContext
     {
         IDbContextTransaction dbTrn;
         TDbContext context;
@@ -53,9 +53,14 @@ namespace Dannys.Common
             return dbTrn.RollbackAsync();
         }
 
-        public Task SaveChanges()
+        public Task<int> SaveChanges()
         {
             return context.SaveChangesAsync();
+        }
+
+        public virtual Task AddAuditTrail<TEntity>(TEntity entity, string action, SaveOption saveOption) where TEntity : class, IEntity
+        {
+            return Task.CompletedTask;
         }
     }
 }

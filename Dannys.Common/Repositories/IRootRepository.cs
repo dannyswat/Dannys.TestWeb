@@ -9,6 +9,6 @@ namespace Dannys.Common
 {
 	public interface IRootRepository<TEntity> : IRepository<TEntity> where TEntity : IRootEntity
 	{
-		TEntity Get(IUnitOfWork unitOfWork, int id, params Expression<Func<TEntity, object>>[] includeProperties);
+		Task<TEntity> Get(IUnitOfWork unitOfWork, int id, params Expression<Func<TEntity, object>>[] includeProperties);
 	}
 }

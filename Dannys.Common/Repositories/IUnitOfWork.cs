@@ -8,10 +8,11 @@ namespace Dannys.Common
 {
 	public interface IUnitOfWork
 	{
-		Task SaveChanges();
+		Task<int> SaveChanges();
 		Task BeginTransaction();
 		Task CommitTransaction();
 		Task RollbackTransaction();
 		string GetIdentity();
+		Task AddAuditTrail<TEntity>(TEntity entity, string action, SaveOption saveOption) where TEntity : class, IEntity;
 	}
 }

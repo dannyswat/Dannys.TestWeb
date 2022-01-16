@@ -18,7 +18,6 @@ namespace Dannys.Common
 		Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, System.Threading.CancellationToken cancellationToken = default);
 		DbSet<TEntity> Set<TEntity>() where TEntity : class;
 		DbSet<TEntity> Set<TEntity>(string name) where TEntity : class;
-		void AddAuditTrail<TEntity>(TEntity entity, string identity) where TEntity : class, IEntity;
 		Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database { get; }
 		Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker ChangeTracker { get; }
 		Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry Entry(object entity);

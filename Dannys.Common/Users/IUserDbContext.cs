@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dannys.Common.Repositories
+namespace Dannys.Common.Users
 {
     public interface IUserDbContext : IDbContext
     {

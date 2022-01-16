@@ -10,7 +10,7 @@ namespace Dannys.Common
         where TEntity : class, IEntity
         where TDbContext : class, IDbContext
     {
-        public virtual int Delete(IUnitOfWork unitOfWork, int id, SaveOption saveOption = SaveOption.Default)
+        public async virtual Task<int> Delete(IUnitOfWork unitOfWork, int id, SaveOption saveOption = SaveOption.Default)
         {
             var dbContext = GetDbContext(unitOfWork);
             var dbSet = dbContext.Set<TEntity>();
@@ -18,21 +18,24 @@ namespace Dannys.Common
             if (entity == null)
                 throw new EntityNotFoundException<TEntity>(id);
             dbSet.Remove(entity);
-            return Save(dbContext, saveOption);
+            await AddAuditTrail(unitOfWork, entity);
+            return await Save(unitOfWork, saveOption);
         }
 
-        public virtual int Insert(IUnitOfWork unitOfWork, TEntity entity, SaveOption saveOption = SaveOption.Default)
+        public async virtual Task<int> Insert(IUnitOfWork unitOfWork, TEntity entity, SaveOption saveOption = SaveOption.Default)
         {
             var dbContext = GetDbContext(unitOfWork);
             dbContext.Set<TEntity>().Add(entity);
-            return Save(dbContext, saveOption);
+            await AddAuditTrail(unitOfWork, entity);
+            return await Save(unitOfWork, saveOption);
         }
 
-        public virtual int Update(IUnitOfWork unitOfWork, TEntity entity, SaveOption saveOption = SaveOption.Default)
+        public async virtual Task<int> Update(IUnitOfWork unitOfWork, TEntity entity, SaveOption saveOption = SaveOption.Default)
         {
             var dbContext = GetDbContext(unitOfWork);
             dbContext.Set<TEntity>().Update(entity);
-            return Save(dbContext, saveOption);
+            await AddAuditTrail(unitOfWork, entity);
+            return await Save(unitOfWork, saveOption);
         }
     }
 }

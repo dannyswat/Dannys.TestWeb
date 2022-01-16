@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dannys.Common.Services
+namespace Dannys.Common
 {
-    public class UserService
+    public class NonUpdatableAttribute : Attribute
     {
     }
 }
