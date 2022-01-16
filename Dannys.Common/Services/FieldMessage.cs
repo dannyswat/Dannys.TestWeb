@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dannys.Common
 {
-	public interface IUnitOfWorkEF : IUnitOfWork
-	{
-		TDbContext GetDbContext<TDbContext>() where TDbContext : class, IDbContext;
-	}
+    public class FieldMessage
+    {
+        public string FieldName { get; set; }
+
+        public string Message { get; set; }
+    }
 }

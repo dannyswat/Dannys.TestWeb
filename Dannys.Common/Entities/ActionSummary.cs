@@ -8,6 +8,11 @@ namespace Dannys.Common
 {
 	public class ActionSummary
 	{
+		public ActionSummary(string user)
+        {
+			By = user;
+			At = DateTimeOffset.Now;
+        }
 		public DateTimeOffset At { get; set; }
 
 		public string By { get; set; }

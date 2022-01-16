@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Dannys.Common
 {
-	public interface IUnitOfWorkEF : IUnitOfWork
-	{
-		TDbContext GetDbContext<TDbContext>() where TDbContext : class, IDbContext;
-	}
+    public interface IRequestIdentity
+    {
+        string GetUserName();
+    }
 }

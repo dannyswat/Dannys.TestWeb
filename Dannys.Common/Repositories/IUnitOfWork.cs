@@ -12,5 +12,6 @@ namespace Dannys.Common
 		Task BeginTransaction();
 		Task CommitTransaction();
 		Task RollbackTransaction();
+		string GetIdentity();
 	}
 }
