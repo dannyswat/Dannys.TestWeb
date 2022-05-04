@@ -10,14 +10,14 @@ namespace Dannys.Sales
 {
     public interface ISalesDbContext : ICommonDbContext
     {
-        public DbSet<Customer> Customers { get; set; }
+        DbSet<Customer> Customers { get; set; }
 
-        public DbSet<SalesPerson> SalesPersons { get; set; }
+        DbSet<SalesPerson> SalesPersons { get; set; }
 
-        public DbSet<CustomerPriceGroup> CustomerPriceGroups { get; set; }
+        DbSet<CustomerPriceGroup> CustomerPriceGroups { get; set; }
 
-        public DbSet<SalesOrder> SalesOrders { get; set; }
+        DbSet<SalesOrder> SalesOrders { get; set; }
 
-        public DbSet<SalesOrderStatus> SalesOrderStatuses { get; set; }
+        DbSet<SalesOrderStatus> SalesOrderStatuses { get; set; }
     }
 }
